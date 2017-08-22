@@ -15,7 +15,17 @@ def get_distro():
     if os != 'Ubuntu':
     	print "Distribution is other than Ubuntu! Exiting ..."
     	sys.exit(1)
-    return False
+    else:
+    	print "Ubuntu hit"
+    
+
+def check_diskspace():
+	space = subprocess.check_output(["df --output=avail / | sed -n '2p'"], shell=True)
+	if (space < 1500000):
+		print "Disk space of root filesystem less than 1.5 GB. Please free up space before downloading... Exiting !"
+		sys.exit(1)
+	else:
+		print "Disk space enough"
 
 
 def movie_search(args):
@@ -26,7 +36,8 @@ def movie_search(args):
 		r = requests.get(url, headers=headers) 
 		print r.status_code
 		data = json.loads(r.content)
-		print data
+
+		print json.dumps(data, indent=4)
 	except requests.exceptions.RequestException as e: 
 		print e
         sys.exit(1)
@@ -34,10 +45,12 @@ def movie_search(args):
 def movie_reviews(args):
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?movie_id=' + args.movie_id
+		headers = {'Content-type': 'application/json'}
 		print url
-		r = requests.get(url) 
+		r = requests.get(url, headers=headers) 
 		print r.status_code
-		print r.content
+		data = json.loads(r.content)
+		print json.dumps(data, indent=4)
 	except requests.exceptions.RequestException as e: 
 		print e
         sys.exit(1)
@@ -65,4 +78,5 @@ args.func(args)
 
 if __name__ == "__main__":
 	get_distro()
+	check_diskspace()
 
