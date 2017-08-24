@@ -66,16 +66,19 @@ def movie_download(args):
 		print "in func"
 	except requests.exceptions.RequestException as e: 
 		print e
-        sys.exit(1)	
+		sys.exit(1)
 	print "outside try block"
 	hash_id = data["data"]["movies"][0]["torrents"][0]["hash"]
-	print hash_id
+	new_hash_id = str(hash_id)
+	print hash_id, type(new_hash_id)
 	download_dir = "~/Downloads"
 	if not os.path.exists(download_dir):
 		print "Creating directory Downloads in home folder to save file ..."
 		os.makedirs(download_dir)
-	print "Downloading movie ... \n"
-	subprocess.call(["/usr/bin/transmission-cli", "https://yts.ag/torrent/download/", hash_id])   
+	print "Downloading movie ... ", args.movie_name
+	cmd = ["/usr/bin/transmission-cli", "https://yts.ag/torrent/download/"] + new_hash_id
+	#subprocess.call(["/usr/bin/transmission-cli", "https://yts.ag/torrent/download/", hash_id])   
+	subprocess.call(cmd, shell=True)
 	 
 parser = argparse.ArgumentParser(description='Python movie maniac program')
 subparsers = parser.add_subparsers()
@@ -104,4 +107,5 @@ args.func(args)
 if __name__ == "__main__":
 	get_distro()
 	check_diskspace()
+	args.func(args)
 
