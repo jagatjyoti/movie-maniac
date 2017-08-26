@@ -15,8 +15,6 @@ def get_distro():
     if os != 'Ubuntu':
     	print "Distribution is other than Ubuntu! Exiting ..."
     	sys.exit(1)
-    else:
-    	print "Ubuntu hit"
     
 
 def check_diskspace():
@@ -25,7 +23,7 @@ def check_diskspace():
 		print "Disk space of root filesystem less than 1.5 GB. Please free up space before downloading... Exiting !"
 		sys.exit(1)
 	else:
-		print "Disk space enough"
+		print "Diskspace is sufficient"
 
 
 def movie_search(args):
@@ -56,6 +54,7 @@ def movie_reviews(args):
         sys.exit(1)
 
 def movie_download(args):
+	check_diskspace()
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
@@ -66,7 +65,7 @@ def movie_download(args):
 		print "in func"
 	except requests.exceptions.RequestException as e: 
 		print e
-        sys.exit(1)	
+		sys.exit(1)	
 	print "outside try block"
 	hash_id = data["data"]["movies"][0]["torrents"][0]["hash"]
 	print hash_id
@@ -75,7 +74,9 @@ def movie_download(args):
 		print "Creating directory Downloads in home folder to save file ..."
 		os.makedirs(download_dir)
 	print "Downloading movie ... \n"
-	subprocess.call(["/usr/bin/transmission-cli", "https://yts.ag/torrent/download/", hash_id])   
+	cmd = "/usr/bin/transmission-cli https://yts.ag/torrent/download/" + hash_id
+	subprocess.call(cmd, shell=True)
+	#subprocess.call(["/usr/bin/transmission-cli", "https://yts.ag/torrent/download/", hash_id],shell=True)   
 	 
 parser = argparse.ArgumentParser(description='Python movie maniac program')
 subparsers = parser.add_subparsers()
@@ -98,10 +99,10 @@ if len(sys.argv) <= 1:
  
 args = parser.parse_args()
  
-args.func(args)
+#args.func(args)
 
 
 if __name__ == "__main__":
 	get_distro()
-	check_diskspace()
+	args.func(args)
 
