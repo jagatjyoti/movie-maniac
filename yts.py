@@ -22,8 +22,6 @@ def check_diskspace():
 	if (space < 1500000):
 		print "Disk space of root filesystem less than 1.5 GB. Please free up space before downloading... Exiting !"
 		sys.exit(1)
-	else:
-		print "Diskspace is sufficient"
 
 
 def movie_search(args):
