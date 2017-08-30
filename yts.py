@@ -28,12 +28,20 @@ def movie_search(args):
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
-		print url
+		print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
-		print r.status_code
+		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
-
-		print json.dumps(data, indent=4)
+		print "********************** Movie Details *************************"
+		print "Movie Name:", data["data"]["movies"][0]["title"]
+		print "Release Year:", data["data"]["movies"][0]["year"]
+		print "URL:", data["data"]["movies"][0]["url"]
+		print "Rating:", data["data"]["movies"][0]["rating"]
+		gen = data["data"]["movies"][0]["genres"]
+		print "Genre:", [str(item) for item in gen]
+		print "Description:", data["data"]["movies"][0]["summary"]
+		print "\n"
+		#print json.dumps(data, indent=4)
 	except requests.exceptions.RequestException as e: 
 		print e
         sys.exit(1)
