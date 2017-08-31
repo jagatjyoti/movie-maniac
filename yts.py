@@ -32,6 +32,9 @@ def movie_search(args):
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
+		if data["data"]["movie_count"] == 0:
+			print "No such movie or unable to process request ! Exiting ..." + "\n"
+			sys.exit(1)
 		print "********************** Movie Details *************************"
 		print "Movie Name:", data["data"]["movies"][0]["title"]
 		print "Release Year:", data["data"]["movies"][0]["year"]
@@ -42,19 +45,40 @@ def movie_search(args):
 		print "Description:", data["data"]["movies"][0]["summary"]
 		print "\n"
 		#print json.dumps(data, indent=4)
+
 	except requests.exceptions.RequestException as e: 
 		print e
         sys.exit(1)
 
-def movie_reviews(args):
+def movie_suggestions(args):
 	try: 
-		url = 'https://yts.ag/api/v2/list_movies.json?movie_id=' + args.movie_id
+		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
-		print url
+		#print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
-		print r.status_code
+		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
-		print json.dumps(data, indent=4)
+		if data["data"]["movie_count"] == 0:
+			print "No such movie or unable to process request ! Exiting ..." + "\n"
+			sys.exit(1)	
+		movie_id = data["data"]["movies"][0]["id"]	
+		print "Got corresponding movie ID: ", movie_id
+		url = 'https://yts.ag/api/v2/movie_suggestions.json?movie_id=' + str(movie_id)
+		print "Trying to hit web address ", url + "\n"
+		headers = {'Content-type': 'application/json'}
+		r = requests.get(url, headers=headers) 
+		print "Status Code: ", r.status_code, r.reason + "\n"
+		data = json.loads(r.content)
+		print "************************ Movie Suggestions ************************* \n"
+		for i in data["data"]["movies"]:
+			print "\n ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n"
+			print "Movie Name:", i["title"]
+			print "Release Year:", i["year"]
+			print "Rating:", i["rating"]
+			print "URL:", i["url"]
+			print "Description:", i["summary"]
+		print "========================================"
+
 	except requests.exceptions.RequestException as e: 
 		print e
         sys.exit(1)
@@ -66,13 +90,16 @@ def movie_download(args):
 		headers = {'Content-type': 'application/json'}
 		print url
 		r = requests.get(url, headers=headers) 
-		print r.status_code
+		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
-		print "in func"
+		if data["data"]["movie_count"] == 0:
+			print "No such movie or unable to process request ! Exiting ..." + "\n"
+			sys.exit(1)
+
 	except requests.exceptions.RequestException as e: 
 		print e
 		sys.exit(1)	
-	print "outside try block"
+
 	hash_id = data["data"]["movies"][0]["torrents"][0]["hash"]
 	print hash_id
 	download_dir = "~/Downloads"
@@ -92,9 +119,9 @@ parser_movie_search = subparsers.add_parser('movie_search', help='Search and fet
 parser_movie_search.add_argument('movie_name', type=str)
 parser_movie_search.set_defaults(func=movie_search)
  
-parser_movie_reviews = subparsers.add_parser('movie_reviews', help='Show reviews of a movie')
-parser_movie_reviews.add_argument('movie_id', type=int)
-parser_movie_reviews.set_defaults(func=movie_reviews)
+parser_movie_suggestions = subparsers.add_parser('movie_suggestions', help='Show related movies to the movie')
+parser_movie_suggestions.add_argument('movie_name', type=str)
+parser_movie_suggestions.set_defaults(func=movie_suggestions)
 
 parser_movie_download = subparsers.add_parser('movie_download', help='Download a movie')
 parser_movie_download.add_argument('movie_name', type=str)
