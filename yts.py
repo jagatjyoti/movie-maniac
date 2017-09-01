@@ -17,6 +17,20 @@ def get_distro():
     	sys.exit(1)
     
 
+def torrent_client_check():
+	try:
+		print "Checking if client present \n"
+    	subprocess.call("transmission-cli")
+	except OSError as e:
+    	if e.errno == os.errno.ENOENT:
+    		print "Torrent client not installed ... Installing now ! \n"
+    		cmd = "sudo apt-get -y install transmission-cli"
+        	subprocess.call(cmd)
+    	else:
+        	print "Something else went wrong while trying to run `transmission-cli`"
+        	raise
+
+
 def check_diskspace():
 	space = subprocess.check_output(["df --output=avail / | sed -n '2p'"], shell=True)
 	if (space < 1500000):
@@ -85,6 +99,7 @@ def movie_suggestions(args):
 
 def movie_download(args):
 	check_diskspace()
+	torrent_client_check()
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
