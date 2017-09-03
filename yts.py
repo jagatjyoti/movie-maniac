@@ -9,6 +9,7 @@ import os
 import sys
 import argparse
 
+
 def get_distro():
     var = platform.dist()
     os  = var[0]
@@ -42,7 +43,7 @@ def movie_search(args):
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
-		print "Trying to hit web address ", url + "\n"
+		print "Trying to hit API of YTS and get response ... \n"
 		r = requests.get(url, headers=headers) 
 		#print "Status Code: ", r.status_code, r.reason 
 		data = json.loads(r.content)
@@ -52,12 +53,9 @@ def movie_search(args):
 		for i in data["data"]["movies"]:
 			if i["title"] == args.movie_name:
 				title = i["title"]
-				#print title
 				movie_id = i["id"]
-				#print movie_id
 		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
 		headers = {'Content-type': 'application/json'}
-		#print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
@@ -80,14 +78,13 @@ def movie_search(args):
 		#print json.dumps(data, indent=4)
 
 	except requests.exceptions.RequestException as e: 
-		print e
+		print "Exception: \n", e
         sys.exit(1)
 
 def movie_suggestions(args):
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
-		#print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
@@ -97,7 +94,7 @@ def movie_suggestions(args):
 		movie_id = data["data"]["movies"][0]["id"]	
 		print "Got corresponding movie ID: ", movie_id
 		url = 'https://yts.ag/api/v2/movie_suggestions.json?movie_id=' + str(movie_id)
-		print "Trying to hit web address ", url + "\n"
+		print "Trying to hit API of YTS and get response ... \n"
 		headers = {'Content-type': 'application/json'}
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
@@ -113,7 +110,7 @@ def movie_suggestions(args):
 		print "========================================"
 
 	except requests.exceptions.RequestException as e: 
-		print e
+		print "Exception: \n", e
         sys.exit(1)
 
 def movie_download(args):
@@ -122,9 +119,8 @@ def movie_download(args):
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
-		print "Trying to hit web address ", url + "\n"
+		print "Trying to hit API of YTS and get response ... \n"
 		r = requests.get(url, headers=headers) 
-		#print "Status Code: ", r.status_code, r.reason 
 		data = json.loads(r.content)
 		if data["data"]["movie_count"] == 0:
 			print "No such movie or unable to process request ! Exiting ..." + "\n"
@@ -132,12 +128,9 @@ def movie_download(args):
 		for i in data["data"]["movies"]:
 			if i["title"] == args.movie_name:
 				title = i["title"]
-				print title
 				movie_id = i["id"]
-				print movie_id
 		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
 		headers = {'Content-type': 'application/json'}
-		#print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
@@ -149,7 +142,7 @@ def movie_download(args):
 			pass
 
 	except requests.exceptions.RequestException as e: 
-		print e
+		print "Exception: \n", e
 		sys.exit(1)	
 
 	hash_id = data["data"]["movie"]["torrents"][1]["hash"]

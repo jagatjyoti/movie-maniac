@@ -13,7 +13,7 @@ Currently, it supports searching, getting suggestions and downloading a movie.
 ```
 $ python yts.py movie_search "Iron Man"
 
-Trying to hit web address  https://yts.ag/api/v2/list_movies.json?query_term=Iron Man
+Trying to hit API of YTS and get response ...
 
 Status Code:  200 OK
 
