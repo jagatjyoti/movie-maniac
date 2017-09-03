@@ -70,6 +70,10 @@ transmission-cli 2.84 (14307)
 [2017-09-03 12:55:55.101 IST] RPC Server: Adding address to whitelist: 127.0.0.1
 
 ```
+### Info
+
+For downloading the torrent client used is transmission-cli which is the default one for Ubuntu. Don't worry if it's not installed. It's been taken care. 
+
 
 Please feel free to report issues. Contribution and pull requests are very much welcome. :) 
 
