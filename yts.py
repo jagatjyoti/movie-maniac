@@ -44,7 +44,7 @@ def movie_search(args):
 		headers = {'Content-type': 'application/json'}
 		print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
-		print "Status Code: ", r.status_code, r.reason 
+		#print "Status Code: ", r.status_code, r.reason 
 		data = json.loads(r.content)
 		if data["data"]["movie_count"] == 0:
 			print "No such movie or unable to process request ! Exiting ..." + "\n"
@@ -52,12 +52,12 @@ def movie_search(args):
 		for i in data["data"]["movies"]:
 			if i["title"] == args.movie_name:
 				title = i["title"]
-				print title
+				#print title
 				movie_id = i["id"]
-				print movie_id
+				#print movie_id
 		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
 		headers = {'Content-type': 'application/json'}
-		print "Trying to hit web address ", url + "\n"
+		#print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
@@ -124,7 +124,7 @@ def movie_download(args):
 		headers = {'Content-type': 'application/json'}
 		print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
-		print "Status Code: ", r.status_code, r.reason 
+		#print "Status Code: ", r.status_code, r.reason 
 		data = json.loads(r.content)
 		if data["data"]["movie_count"] == 0:
 			print "No such movie or unable to process request ! Exiting ..." + "\n"
@@ -137,7 +137,7 @@ def movie_download(args):
 				print movie_id
 		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
 		headers = {'Content-type': 'application/json'}
-		print "Trying to hit web address ", url + "\n"
+		#print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		data = json.loads(r.content)
