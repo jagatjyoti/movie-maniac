@@ -20,15 +20,15 @@ def get_distro():
 def torrent_client_check():
 	try:
 		print "Checking if client present \n"
-    	subprocess.call("transmission-cli")
+		subprocess.call(["transmission-cli"])
 	except OSError as e:
-    	if e.errno == os.errno.ENOENT:
-    		print "Torrent client not installed ... Installing now ! \n"
-    		cmd = "sudo apt-get -y install transmission-cli"
-        	subprocess.call(cmd)
-    	else:
-        	print "Something else went wrong while trying to run `transmission-cli`"
-        	raise
+		if e.errno == os.errno.ENOENT:
+			print "Torrent client not installed ... Installing now ! \n"
+			cmd = "sudo apt-get -y install transmission-cli"
+			subprocess.call(cmd, shell=True)
+		else:
+			print "Something else went wrong while trying to run `transmission-cli`"
+			raise
 
 
 def check_diskspace():
@@ -44,19 +44,38 @@ def movie_search(args):
 		headers = {'Content-type': 'application/json'}
 		print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
-		print "Status Code: ", r.status_code, r.reason + "\n"
+		print "Status Code: ", r.status_code, r.reason 
 		data = json.loads(r.content)
 		if data["data"]["movie_count"] == 0:
 			print "No such movie or unable to process request ! Exiting ..." + "\n"
 			sys.exit(1)
+		for i in data["data"]["movies"]:
+			if i["title"] == args.movie_name:
+				title = i["title"]
+				print title
+				movie_id = i["id"]
+				print movie_id
+		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
+		headers = {'Content-type': 'application/json'}
+		print "Trying to hit web address ", url + "\n"
+		r = requests.get(url, headers=headers) 
+		print "Status Code: ", r.status_code, r.reason + "\n"
+		data = json.loads(r.content)
+		try:
+			if data["data"]["movie_count"] == 0:
+				print "No such movie or unable to process request ! Exiting ..." + "\n"
+				sys.exit(1)
+		except:
+			pass
+
 		print "********************** Movie Details *************************"
-		print "Movie Name:", data["data"]["movies"][0]["title"]
-		print "Release Year:", data["data"]["movies"][0]["year"]
-		print "URL:", data["data"]["movies"][0]["url"]
-		print "Rating:", data["data"]["movies"][0]["rating"]
-		gen = data["data"]["movies"][0]["genres"]
+		print "Movie Name:", data["data"]["movie"]["title"]
+		print "Release Year:", data["data"]["movie"]["year"]
+		print "URL:", data["data"]["movie"]["url"]
+		print "Rating:", data["data"]["movie"]["rating"]
+		gen = data["data"]["movie"]["genres"]
 		print "Genre:", [str(item) for item in gen]
-		print "Description:", data["data"]["movies"][0]["summary"]
+		print "Description:", data["data"]["movie"]["description_intro"]
 		print "\n"
 		#print json.dumps(data, indent=4)
 
@@ -103,20 +122,38 @@ def movie_download(args):
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
-		print url
+		print "Trying to hit web address ", url + "\n"
 		r = requests.get(url, headers=headers) 
-		print "Status Code: ", r.status_code, r.reason + "\n"
+		print "Status Code: ", r.status_code, r.reason 
 		data = json.loads(r.content)
 		if data["data"]["movie_count"] == 0:
 			print "No such movie or unable to process request ! Exiting ..." + "\n"
 			sys.exit(1)
+		for i in data["data"]["movies"]:
+			if i["title"] == args.movie_name:
+				title = i["title"]
+				print title
+				movie_id = i["id"]
+				print movie_id
+		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
+		headers = {'Content-type': 'application/json'}
+		print "Trying to hit web address ", url + "\n"
+		r = requests.get(url, headers=headers) 
+		print "Status Code: ", r.status_code, r.reason + "\n"
+		data = json.loads(r.content)
+		try:
+			if data["data"]["movie_count"] == 0:
+				print "No such movie or unable to process request ! Exiting ..." + "\n"
+				sys.exit(1)
+		except:
+			pass
 
 	except requests.exceptions.RequestException as e: 
 		print e
 		sys.exit(1)	
 
-	hash_id = data["data"]["movies"][0]["torrents"][0]["hash"]
-	print hash_id
+	hash_id = data["data"]["movie"]["torrents"][1]["hash"]
+	print "Hash ID for corresponding movie: ", hash_id
 	download_dir = "~/Downloads"
 	if not os.path.exists(download_dir):
 		print "Creating directory Downloads in home folder to save file ..."
