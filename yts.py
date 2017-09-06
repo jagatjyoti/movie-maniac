@@ -3,7 +3,6 @@
 import requests
 import platform
 import json
-import time
 import subprocess
 import os
 import sys
@@ -40,15 +39,20 @@ def check_diskspace():
 
 
 def movie_search(args):
+	global movie_id
+	movie_id = ""
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
 		print "Trying to hit API of YTS and get response ... \n"
 		r = requests.get(url, headers=headers) 
-		#print "Status Code: ", r.status_code, r.reason 
-		data = json.loads(r.content)
+		try:
+			data = json.loads(r.content)
+		except ValueError as e:
+			print "Exception raised: ", e
+			sys.exit(1)
 		if data["data"]["movie_count"] == 0:
-			print "No such movie or unable to process request ! Exiting ..." + "\n"
+			print "No such movie or incorrect spell of movie name ! Exiting ..." + "\n"
 			sys.exit(1)
 		for i in data["data"]["movies"]:
 			if i["title"] == args.movie_name:
@@ -58,10 +62,14 @@ def movie_search(args):
 		headers = {'Content-type': 'application/json'}
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
-		data = json.loads(r.content)
+		try: 
+			data = json.loads(r.content)
+		except ValueError as e:
+			print "Exception raised: ", e 
+			sys.exit(1)
 		try:
 			if data["data"]["movie_count"] == 0:
-				print "No such movie or unable to process request ! Exiting ..." + "\n"
+				print "No such movie or incorrect spell of movie name ! Exiting ..." + "\n"
 				sys.exit(1)
 		except:
 			pass
@@ -87,9 +95,13 @@ def movie_suggestions(args):
 		headers = {'Content-type': 'application/json'}
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
-		data = json.loads(r.content)
+		try:
+			data = json.loads(r.content)
+		except ValueError as e:
+			print "Exception raised: ", e
+			sys.exit(1)
 		if data["data"]["movie_count"] == 0:
-			print "No such movie or unable to process request ! Exiting ..." + "\n"
+			print "No such movie or incorrect spell of movie name ! Exiting ..." + "\n"
 			sys.exit(1)	
 		movie_id = data["data"]["movies"][0]["id"]	
 		print "Got corresponding movie ID: ", movie_id
@@ -98,7 +110,11 @@ def movie_suggestions(args):
 		headers = {'Content-type': 'application/json'}
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
-		data = json.loads(r.content)
+		try:
+			data = json.loads(r.content)
+		except ValueError as e:
+			print "Exception raised: ", e
+			sys.exit(1)
 		print "************************ Movie Suggestions ************************* \n"
 		for i in data["data"]["movies"]:
 			print "\n ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n"
@@ -121,9 +137,13 @@ def movie_download(args):
 		headers = {'Content-type': 'application/json'}
 		print "Trying to hit API of YTS and get response ... \n"
 		r = requests.get(url, headers=headers) 
-		data = json.loads(r.content)
+		try:
+			data = json.loads(r.content)
+		except ValueError as e:
+			print "Exception raised: ", e
+			sys.exit(1)
 		if data["data"]["movie_count"] == 0:
-			print "No such movie or unable to process request ! Exiting ..." + "\n"
+			print "No such movie or incorrect spell of movie name ! Exiting ..." + "\n"
 			sys.exit(1)
 		for i in data["data"]["movies"]:
 			if i["title"] == args.movie_name:
@@ -133,10 +153,14 @@ def movie_download(args):
 		headers = {'Content-type': 'application/json'}
 		r = requests.get(url, headers=headers) 
 		print "Status Code: ", r.status_code, r.reason + "\n"
-		data = json.loads(r.content)
+		try:
+			data = json.loads(r.content)
+		except ValueError as e:
+			print "Exception raised: ", e
+			sys.exit(1)
 		try:
 			if data["data"]["movie_count"] == 0:
-				print "No such movie or unable to process request ! Exiting ..." + "\n"
+				print "No such movie or incorrect spell of movie name ! Exiting ..." + "\n"
 				sys.exit(1)
 		except:
 			pass
