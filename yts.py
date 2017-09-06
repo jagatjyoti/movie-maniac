@@ -132,6 +132,8 @@ def movie_suggestions(args):
 def movie_download(args):
 	check_diskspace()
 	torrent_client_check()
+	global movie_id
+	movie_id = ""
 	try: 
 		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
