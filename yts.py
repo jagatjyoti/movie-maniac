@@ -15,7 +15,7 @@ def get_distro():
     if os != 'Ubuntu':
     	print "Distribution is other than Ubuntu! Exiting ..."
     	sys.exit(1)
-    
+
 
 def torrent_client_check():
 	try:
@@ -41,11 +41,11 @@ def check_diskspace():
 def movie_search(args):
 	global movie_id
 	movie_id = ""
-	try: 
-		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
+	try:
+		url = 'https://yts.am/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
 		print "Trying to hit API of YTS and get response ... \n"
-		r = requests.get(url, headers=headers) 
+		r = requests.get(url, headers=headers)
 		try:
 			data = json.loads(r.content)
 		except ValueError as e:
@@ -58,14 +58,14 @@ def movie_search(args):
 			if i["title"] == args.movie_name:
 				title = i["title"]
 				movie_id = i["id"]
-		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
+		url = 'https://yts.am/api/v2/movie_details.json?movie_id=' + str(movie_id)
 		headers = {'Content-type': 'application/json'}
-		r = requests.get(url, headers=headers) 
+		r = requests.get(url, headers=headers)
 		print "Status Code: ", r.status_code, r.reason + "\n"
-		try: 
+		try:
 			data = json.loads(r.content)
 		except ValueError as e:
-			print "Exception raised: ", e 
+			print "Exception raised: ", e
 			sys.exit(1)
 		try:
 			if data["data"]["movie_count"] == 0:
@@ -85,15 +85,15 @@ def movie_search(args):
 		print "\n"
 		#print json.dumps(data, indent=4)
 
-	except requests.exceptions.RequestException as e: 
+	except requests.exceptions.RequestException as e:
 		print "Exception: \n", e
         sys.exit(1)
 
 def movie_suggestions(args):
-	try: 
-		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
+	try:
+		url = 'https://yts.am/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
-		r = requests.get(url, headers=headers) 
+		r = requests.get(url, headers=headers)
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		try:
 			data = json.loads(r.content)
@@ -102,13 +102,13 @@ def movie_suggestions(args):
 			sys.exit(1)
 		if data["data"]["movie_count"] == 0:
 			print "No such movie or incorrect spell of movie name ! Exiting ..." + "\n"
-			sys.exit(1)	
-		movie_id = data["data"]["movies"][0]["id"]	
+			sys.exit(1)
+		movie_id = data["data"]["movies"][0]["id"]
 		print "Got corresponding movie ID: ", movie_id
-		url = 'https://yts.ag/api/v2/movie_suggestions.json?movie_id=' + str(movie_id)
+		url = 'https://yts.am/api/v2/movie_suggestions.json?movie_id=' + str(movie_id)
 		print "Trying to hit API of YTS and get response ... \n"
 		headers = {'Content-type': 'application/json'}
-		r = requests.get(url, headers=headers) 
+		r = requests.get(url, headers=headers)
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		try:
 			data = json.loads(r.content)
@@ -125,7 +125,7 @@ def movie_suggestions(args):
 			print "Description:", i["summary"]
 		print "========================================"
 
-	except requests.exceptions.RequestException as e: 
+	except requests.exceptions.RequestException as e:
 		print "Exception: \n", e
         sys.exit(1)
 
@@ -134,11 +134,11 @@ def movie_download(args):
 	torrent_client_check()
 	global movie_id
 	movie_id = ""
-	try: 
-		url = 'https://yts.ag/api/v2/list_movies.json?query_term=' + args.movie_name
+	try:
+		url = 'https://yts.am/api/v2/list_movies.json?query_term=' + args.movie_name
 		headers = {'Content-type': 'application/json'}
 		print "Trying to hit API of YTS and get response ... \n"
-		r = requests.get(url, headers=headers) 
+		r = requests.get(url, headers=headers)
 		try:
 			data = json.loads(r.content)
 		except ValueError as e:
@@ -151,9 +151,9 @@ def movie_download(args):
 			if i["title"] == args.movie_name:
 				title = i["title"]
 				movie_id = i["id"]
-		url = 'https://yts.ag/api/v2/movie_details.json?movie_id=' + str(movie_id)
+		url = 'https://yts.am/api/v2/movie_details.json?movie_id=' + str(movie_id)
 		headers = {'Content-type': 'application/json'}
-		r = requests.get(url, headers=headers) 
+		r = requests.get(url, headers=headers)
 		print "Status Code: ", r.status_code, r.reason + "\n"
 		try:
 			data = json.loads(r.content)
@@ -167,9 +167,9 @@ def movie_download(args):
 		except:
 			pass
 
-	except requests.exceptions.RequestException as e: 
+	except requests.exceptions.RequestException as e:
 		print "Exception: \n", e
-		sys.exit(1)	
+		sys.exit(1)
 
 	hash_id = data["data"]["movie"]["torrents"][1]["hash"]
 	print "Hash ID for corresponding movie: ", hash_id
@@ -178,18 +178,18 @@ def movie_download(args):
 		print "Creating directory Downloads in home folder to save file ..."
 		os.makedirs(download_dir)
 	print "Downloading movie ... \n"
-	cmd = "/usr/bin/transmission-cli https://yts.ag/torrent/download/" + hash_id
+	cmd = "/usr/bin/transmission-cli https://yts.am/torrent/download/" + hash_id
 	subprocess.call(cmd, shell=True)
-	#subprocess.call(["/usr/bin/transmission-cli", "https://yts.ag/torrent/download/", hash_id],shell=True)   
-	 
+	#subprocess.call(["/usr/bin/transmission-cli", "https://yts.am/torrent/download/", hash_id],shell=True)
+
 parser = argparse.ArgumentParser(description='Python movie maniac program')
 subparsers = parser.add_subparsers()
- 
+
 
 parser_movie_search = subparsers.add_parser('movie_search', help='Search and fetch details of a movie')
 parser_movie_search.add_argument('movie_name', type=str)
 parser_movie_search.set_defaults(func=movie_search)
- 
+
 parser_movie_suggestions = subparsers.add_parser('movie_suggestions', help='Show related movies to the movie')
 parser_movie_suggestions.add_argument('movie_name', type=str)
 parser_movie_suggestions.set_defaults(func=movie_suggestions)
@@ -197,16 +197,15 @@ parser_movie_suggestions.set_defaults(func=movie_suggestions)
 parser_movie_download = subparsers.add_parser('movie_download', help='Download a movie')
 parser_movie_download.add_argument('movie_name', type=str)
 parser_movie_download.set_defaults(func=movie_download)
- 
+
 if len(sys.argv) <= 1:
     sys.argv.append('--help')
- 
+
 args = parser.parse_args()
- 
+
 #args.func(args)
 
 
 if __name__ == "__main__":
 	get_distro()
 	args.func(args)
-
